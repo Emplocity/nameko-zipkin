@@ -23,13 +23,14 @@ class Zipkin(DependencyProvider):
         monkey_patch(self.transport.handle)
 
     def get_dependency(self, worker_ctx):
+        config = self.container.config[ZIPKIN_CONFIG_SECTION]
         zipkin_attrs = _read_zipkin_attrs(worker_ctx)
         logger.debug('get_dependency zipkin attrs: {}'.format(zipkin_attrs))
         span = zipkin.zipkin_server_span(worker_ctx.service_name,
                                          worker_ctx.entrypoint.method_name,
                                          zipkin_attrs=zipkin_attrs,
                                          transport_handler=self.transport.handle,
-                                         sample_rate=100.0)
+                                         sample_rate=config.get('SAMPLE_RATE', 10.0))
         logger.debug('tracing {}.{}'.format(worker_ctx.service_name, worker_ctx.entrypoint.method_name))
         self.spans[worker_ctx.call_id] = span
         return span
