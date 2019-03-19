@@ -1,3 +1,5 @@
+import logging
+
 from nameko.extensions import DependencyProvider
 from py_zipkin import zipkin
 from py_zipkin.util import generate_random_64bit_string
@@ -6,6 +8,9 @@ from nameko_zipkin.constants import *
 from nameko_zipkin.transport import Transport
 from nameko_zipkin.method_proxy import monkey_patch
 from nameko_zipkin.utils import start_span, stop_span
+
+
+logger = logging.getLogger('nameko-zipkin')
 
 
 class Zipkin(DependencyProvider):
@@ -23,6 +28,7 @@ class Zipkin(DependencyProvider):
         # if there are no zipking attrs in context data, request isn't traced
         # TODO: support trace initialization in such condition
         if not zipkin_attrs:
+            logger.info('no zipkin attrs in context, not tracing')
             return None
         span = zipkin.zipkin_server_span(worker_ctx.service_name,
                                          worker_ctx.entrypoint.method_name,
