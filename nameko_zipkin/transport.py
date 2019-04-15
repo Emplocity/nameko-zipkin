@@ -28,7 +28,9 @@ class HttpHandler(BaseTransportHandler):
             headers={'Content-Type': 'application/x-thrift'}
         )
         response = urllib.request.urlopen(request)
-        logger.debug('response [{}]: {}'.format(response.status_code, response.text))
+        logger.debug(
+            'response [{}]: {}'.format(response.getcode(), response.read().decode())
+        )
 
 
 class Transport(SharedExtension):
