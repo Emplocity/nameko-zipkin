@@ -4,8 +4,9 @@ import logging
 from nameko.extensions import SharedExtension
 from py_zipkin.transport import BaseTransportHandler
 
-from nameko_zipkin.constants import *
-
+from nameko_zipkin.constants import (
+    ZIPKIN_CONFIG_SECTION, HANDLER_KEY, HANDLER_PARAMS_KEY
+)
 
 urllib = eventlet.import_patched('urllib')
 
