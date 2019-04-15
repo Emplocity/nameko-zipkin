@@ -1,13 +1,13 @@
+import eventlet
 import logging
 
-import eventlet
 from nameko.extensions import SharedExtension
 from py_zipkin.transport import BaseTransportHandler
 
 from nameko_zipkin.constants import *
 
 
-requests = eventlet.import_patched('requests')
+urllib = eventlet.import_patched('urllib')
 
 logger = logging.getLogger('nameko-zipkin')
 
@@ -21,11 +21,12 @@ class HttpHandler(BaseTransportHandler):
 
     def send(self, encoded_span):
         logger.info('posting to {}'.format(self.url))
-        response = requests.post(
+        request = urllib.request.Request(
             self.url,
             data=encoded_span,
-            headers={'Content-Type': 'application/x-thrift'},
+            headers={'Content-Type': 'application/x-thrift'}
         )
+        response = urllib.request.urlopen(request)
         logger.debug('response [{}]: {}'.format(response.status_code, response.text))
 
 
