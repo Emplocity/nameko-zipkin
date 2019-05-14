@@ -1,4 +1,4 @@
-nameko-zipkin
+emplocity-nameko-zipkin
 -------------
 
 Zipkin tracing for nameko framework
@@ -7,7 +7,7 @@ Install
 -------
 
 ```
-pip install nameko-zipkin 
+pip install emplocity-nameko-zipkin
 ```
 
 Usage
