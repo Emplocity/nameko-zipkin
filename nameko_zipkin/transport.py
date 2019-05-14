@@ -1,56 +1,36 @@
+import eventlet
 import logging
-from queue import Queue
-from threading import Thread
-from urllib.request import Request, urlopen
-from abc import abstractmethod, ABCMeta
 
 from nameko.extensions import SharedExtension
+from py_zipkin.transport import BaseTransportHandler
 
-from nameko_zipkin.constants import *
+from nameko_zipkin.constants import (
+    ZIPKIN_CONFIG_SECTION, HANDLER_KEY, HANDLER_PARAMS_KEY
+)
+
+urllib = eventlet.import_patched('urllib')
 
 logger = logging.getLogger('nameko-zipkin')
 
 
-class IHandler(metaclass=ABCMeta):
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
-
-    @abstractmethod
-    def handle(self, encoded_span):
-        pass
-
-
-class HttpHandler(IHandler):
+class HttpHandler(BaseTransportHandler):
     def __init__(self, url):
         self.url = url
-        self.queue = Queue()
-        self.thread = None
 
-    def start(self):
-        self.thread = Thread(target=self._poll)
-        self.thread.start()
+    def get_max_payload_bytes(self):
+        return None
 
-    def stop(self):
-        self.queue.put(StopIteration)
-        self.thread.join()
-
-    def handle(self, encoded_span):
-        body = b'\x0c\x00\x00\x00\x01' + encoded_span
-        request = Request(self.url, body, {'Content-Type': 'application/x-thrift'}, method='POST')
-        try:
-            urlopen(request)
-        except:
-            logger.error('Exception handling span', exc_info=True)
-
-    def _poll(self):
-        while True:
-            span = self.queue.get()
-            if span == StopIteration:
-                break
-            self.handle(span)
+    def send(self, encoded_span):
+        logger.info('posting to {}'.format(self.url))
+        request = urllib.request.Request(
+            self.url,
+            data=encoded_span,
+            headers={'Content-Type': 'application/x-thrift'}
+        )
+        response = urllib.request.urlopen(request)
+        logger.debug(
+            'response [{}]: {}'.format(response.getcode(), response.read().decode())
+        )
 
 
 class Transport(SharedExtension):
@@ -63,11 +43,5 @@ class Transport(SharedExtension):
         handler_params = config[HANDLER_PARAMS_KEY]
         self._handler = handler_cls(**handler_params)
 
-    def start(self):
-        self._handler.start()
-
-    def stop(self):
-        self._handler.stop()
-
     def handle(self, encoded_span):
-        self._handler.handle(encoded_span)
+        self._handler.send(encoded_span)

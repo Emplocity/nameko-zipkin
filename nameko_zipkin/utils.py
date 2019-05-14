@@ -12,9 +12,16 @@ def _get_attrs(span):
 
 
 def start_span(span):
-    attrs = _get_attrs(span)
     span.start()
-    logger.debug('Span started', extra=attrs)
+    attrs = _get_attrs(span)
+    logger.debug(
+        '%s span started [%s]: %s -> %s',
+        attrs.get('type'),
+        attrs.get('trace_id'),
+        attrs.get('parent_span_id'),
+        attrs.get('span_id'),
+        extra=attrs,
+    )
 
 
 def stop_span(span):
@@ -25,4 +32,11 @@ def stop_span(span):
         logger.error('Exception on span stop', exc_info=True, extra=attrs)
     finally:
         if span.zipkin_attrs:
-            logger.debug('Span stopped', extra=attrs)
+            logger.debug(
+                '%s span stopped [%s]: %s <- %s',
+                attrs.get('type'),
+                attrs.get('trace_id'),
+                attrs.get('span_id'),
+                attrs.get('parent_span_id'),
+                extra=attrs,
+            )
