@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 
-__version__ = '0.1.5'
+__version__ = '0.1.7'
 
 
 with open("README.md", "r") as fh:
