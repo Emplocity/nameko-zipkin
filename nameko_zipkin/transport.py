@@ -8,7 +8,7 @@ from nameko_zipkin.constants import (
     ZIPKIN_CONFIG_SECTION, HANDLER_KEY, HANDLER_PARAMS_KEY
 )
 
-urllib = eventlet.import_patched('urllib')
+urllib = eventlet.import_patched('urllib.request')
 
 logger = logging.getLogger('nameko-zipkin')
 
@@ -22,12 +22,12 @@ class HttpHandler(BaseTransportHandler):
 
     def send(self, encoded_span):
         logger.info('posting to {}'.format(self.url))
-        request = urllib.request.Request(
+        request = urllib.Request(
             self.url,
             data=encoded_span,
             headers={'Content-Type': 'application/x-thrift'}
         )
-        response = urllib.request.urlopen(request)
+        response = urllib.urlopen(request)
         logger.debug(
             'response [{}]: {}'.format(response.getcode(), response.read().decode())
         )
