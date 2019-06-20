@@ -1,4 +1,4 @@
-from nameko.rpc import rpc
+from nameko.rpc import rpc, RpcProxy
 from nameko.web.handlers import http
 
 from nameko_zipkin import Zipkin
@@ -7,6 +7,7 @@ from nameko_zipkin import Zipkin
 class ExampleService:
     name = 'example_service'
     zipkin = Zipkin()
+    example_service = RpcProxy('example_service')
 
     @rpc
     def traced_method(self):
@@ -14,4 +15,8 @@ class ExampleService:
 
     @http('GET', '/')
     def traced_handler(self, request):
-        return 'Find me in Zipkin!'
+        self.zipkin.update_binary_annotations({
+            'browser': request.headers.get('User-Agent'),
+            'url': request.url,
+        })
+        return self.example_service.traced_method()

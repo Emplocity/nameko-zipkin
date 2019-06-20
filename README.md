@@ -23,7 +23,7 @@ from nameko.rpc import rpc
 class Service:
     name = 'service'
     zipkin = Zipkin() # Dependency provider injects py_zipkin.zipkin.zipkin_span object
-    
+
     @rpc
     def method(self):
         assert self.zipkin.service_name == Service.name
