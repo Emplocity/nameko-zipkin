@@ -1,7 +1,41 @@
+import logging
+import logging.config
+
+
+from nameko.events import EventDispatcher, event_handler
 from nameko.rpc import rpc, RpcProxy
 from nameko.web.handlers import http
 
 from nameko_zipkin import Zipkin
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": True,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s.%(funcName)s: %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        }
+    },
+    "loggers": {
+        "nameko": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+        "": {"handlers": ["console"], "level": "INFO"},
+    },
+}
+
+
+logging.getLogger().handlers = []
+logging.config.dictConfig(LOGGING)
+
+
+logger = logging.getLogger(__name__)
 
 
 class ExampleService:
