@@ -1,0 +1,6 @@
+AMQP_URI: pyamqp://rabbitmq:5672
+ZIPKIN:
+  HANDLER: HttpHandler
+  HANDLER_PARAMS:
+    url: http://zipkin:9411/api/v1/spans
+  SAMPLE_RATE: 100.0

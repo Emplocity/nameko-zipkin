@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  example_service:
+    build:
+      context: ./example_service/
+    ports:
+      - target: 8000
+        published: 8000
+        mode: host
+    volumes:
+      - type: bind
+        source: ./example_service/
+        target: /app/
+        volume:
+          nocopy: true
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - target: 9411
+        published: 9411
+        mode: host

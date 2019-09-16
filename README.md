@@ -23,7 +23,7 @@ from nameko.rpc import rpc
 class Service:
     name = 'service'
     zipkin = Zipkin() # Dependency provider injects py_zipkin.zipkin.zipkin_span object
-    
+
     @rpc
     def method(self):
         assert self.zipkin.service_name == Service.name
@@ -72,6 +72,19 @@ ZIPKIN:
     HANDLER_PARAMS:
       url: http://localhost:9411/api/v1/spans
 ```
+
+Test it out locally
+-------------------
+
+We've provided an example docker-compose based stack that includes a nameko
+service and a Zipkin instance. To try it out, run `docker-compose up` in the
+root directory of the project. This will bring up three services: RabbitMQ
+(required by nameko), Zipkin, and an example Python service with both RPC
+and HTTP endpoints.
+
+Navigate to http://localhost:8000 to visit the example service, and if
+you then visit Zipkin dashboard (typically at http://localhost:9411),
+you should see some traces there!
 
 Planed changes
 --------------
