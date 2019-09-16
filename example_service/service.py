@@ -42,6 +42,7 @@ class ExampleService:
     name = "example_service"
     zipkin = Zipkin()
     example_service = RpcProxy("example_service")
+    dispatch = EventDispatcher()
 
     @rpc
     def traced_method(self):
@@ -52,4 +53,9 @@ class ExampleService:
         self.zipkin.update_binary_annotations(
             {"browser": request.headers.get("User-Agent"), "url": request.url}
         )
+        self.dispatch("request_received", {"url": request.url})
         return self.example_service.traced_method()
+
+    @event_handler("example_service", "request_received")
+    def request_received_handler(self, payload):
+        logger.info(f"Received request_received event, payload: {payload}")
