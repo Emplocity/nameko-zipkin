@@ -86,9 +86,8 @@ Navigate to http://localhost:8000 to visit the example service, and if
 you then visit Zipkin dashboard (typically at http://localhost:9411),
 you should see some traces there!
 
-Planed changes
---------------
+Planned changes
+---------------
 
-* Trace initialization on trace attrs absence in context data
 * Kafka transport support
 * Custom handlers support in config.yaml ('my_module.MyHandler')
