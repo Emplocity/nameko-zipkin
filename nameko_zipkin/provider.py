@@ -51,11 +51,14 @@ class Zipkin(DependencyProvider):
 
 
 def _read_zipkin_attrs(worker_ctx):
+    logger.info('reading zipkin attrs for {}.{}'.format(worker_ctx.service_name, worker_ctx.entrypoint.method_name))
+    logger.info(worker_ctx.data)
     if TRACE_ID_HEADER not in worker_ctx.data:
         trace_id = generate_random_64bit_string()
         logger.info('No {} header in context, created trace ID: {}'.format(TRACE_ID_HEADER, trace_id))
     else:
         trace_id = worker_ctx.data[TRACE_ID_HEADER]
+        logger.info("Found {} header, trace ID: {}".format(TRACE_ID_HEADER, trace_id))
     return zipkin.ZipkinAttrs(trace_id=trace_id,
                               span_id=generate_random_64bit_string(),
                               parent_span_id=worker_ctx.data.get(PARENT_SPAN_ID_HEADER),
