@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - target: 5672
+        published: 5672
+      - target: 15672
+        published: 15672
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - target: 9411
+        published: 9411
+  my_service:
+    build: .
+    depends_on:
+      - rabbitmq
+    ports:
+      - target: 8000
+        published: 8000

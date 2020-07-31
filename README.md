@@ -78,7 +78,7 @@ Test it out locally
 
 We've provided an example docker-compose based stack that includes a nameko
 service and a Zipkin instance. To try it out, run `docker-compose up` in the
-root directory of the project. This will bring up three services: RabbitMQ
+example directory of the project. This will bring up three services: RabbitMQ
 (required by nameko), Zipkin, and an example Python service with both RPC
 and HTTP endpoints.
 
